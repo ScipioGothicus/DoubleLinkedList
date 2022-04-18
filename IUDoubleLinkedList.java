@@ -22,6 +22,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		newNode.setNext(head);
 		
 		head = newNode;
+		if(isEmpty()) tail = newNode;
 		
 		size++;
 		modCount++;
@@ -67,7 +68,6 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	public void add(int index, T element) {
 		
 		Node<T> currentNode = head;
-		Node<T> previousNode = null;
 		int currentIndex = 0;
 		
 		boolean found = false;
@@ -79,7 +79,6 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 				found = true;
 			}
 			else {
-				previousNode = currentNode;
 				currentNode = currentNode.getNext();
 				currentIndex++;
 			}
@@ -88,15 +87,30 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 		Node<T> newNode = new Node<T>(element);
 		
-		if(isEmpty()) head = newNode;
+		if(isEmpty()) {
+			head = newNode; 
+			tail = newNode;
+		}
+		
+		else if(index == 0) {
+			newNode.setNext(head);
+			head.setPrevious(newNode);
+			head = newNode;
+		}
+		
+		else if(index == size) {
+			newNode.setPrevious(tail);
+			tail.setNext(newNode);
+			newNode = tail;
+		}
 		
 		else {
-			
-			if(previousNode != null) previousNode.setNext(newNode);
-			if(currentIndex == 0) head = newNode;
-			newNode.setNext(currentNode);
-			if(newNode.getNext() == null) tail = newNode;
-			
+			newNode.setNext(currentNode.getNext());
+			currentNode.setNext(newNode);
+			newNode.setPrevious(currentNode);
+			if(newNode.getNext() != null) {
+				newNode.getNext().setPrevious(newNode); // cheatning??
+			}
 		}
 		
 		size++;
@@ -242,13 +256,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	@Override
 	public T first() {
 		if(isEmpty()) throw new NoSuchElementException();
-		return get(0);
+		return head.getElement();
 	}
 
 	@Override
 	public T last() {
 		if(isEmpty()) throw new NoSuchElementException();
-		return get(size-1);
+		return tail.getElement();
 	}
 
 	@Override
