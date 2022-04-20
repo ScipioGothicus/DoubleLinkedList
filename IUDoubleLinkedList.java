@@ -160,10 +160,12 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		} else if (currentNode == head) { //first node
 			head = currentNode.getNext();
 		} else if (currentNode == tail) { //last node
+			tail.setPrevious(previousNode.getPrevious());
 			tail = previousNode;
 			tail.setNext(null);
 		} else { //somewhere in the middle
 			previousNode.setNext(currentNode.getNext());
+			currentNode.getNext().setPrevious(previousNode);
 		}
 		
 		size--;
@@ -197,10 +199,12 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		} else if (currentNode == head) { //first node
 			head = currentNode.getNext();
 		} else if (currentNode == tail) { //last node
+			tail.setPrevious(previousNode.getPrevious());
 			tail = previousNode;
 			tail.setNext(null);
 		} else { //somewhere in the middle
 			previousNode.setNext(currentNode.getNext());
+			currentNode.getNext().setPrevious(previousNode);
 		}
 		
 		size--;
@@ -311,7 +315,6 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
 		return new DLLIterator();
 	}
 
@@ -384,12 +387,14 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		private int index;
 		private int iterModCount;
 		private boolean nextCalled;
+		private boolean previousCalled;
 		
 		/** Creates a new iterator for the list */
 		public DLLListIterator() {
 			nextNode = head;
 			previousNode = null;
 			nextCalled = false;
+			previousCalled = false;
 			iterModCount = modCount;
 			index = 0;
 		}
@@ -401,60 +406,93 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		
 		@Override
 		public boolean hasNext() {
-			if(isEmpty()) return false;
-			T nextElement = get(index + 1);
-			if(nextElement != null) return true;
+			if(nextNode != null) return true;
 			return false;
 		}
 
 		@Override
 		public T next() {
-			// TODO Auto-generated method stub
-			return null;
+			
+			if(modCount != iterModCount) throw new ConcurrentModificationException();
+			if(isEmpty()) throw new NoSuchElementException();
+			
+			if(size() == 1) {
+				index++;
+				nextNode = head;
+			}
+			else if(nextNode.getNext() != null) {
+				index++;
+				previousNode = nextNode;
+				nextNode = nextNode.getNext();
+			}
+			else {
+				throw new NoSuchElementException();
+			}
+			
+			nextCalled = true;
+			
+			return nextNode.getElement();
 		}
 
 		@Override
 		public boolean hasPrevious() {
-			if(isEmpty()) return false;
-			T previousElement = get(index);
-			if(previousElement != null) return true;
+			if(previousNode != null) return true;
 			return false;
 		}
 
 		@Override
 		public T previous() {
-			// TODO Auto-generated method stub
-			return null;
+			
+			if(modCount != iterModCount) throw new ConcurrentModificationException();
+			
+			if(size() == 1) {
+				index--;
+				previousNode = head;
+			}
+			else if(hasPrevious()) {
+				index--;
+				nextNode = previousNode;
+				if(previousNode.getPrevious() != null) previousNode = previousNode.getPrevious();
+				else previousNode = null;
+			}
+			else {
+				throw new NoSuchElementException();
+			}
+			
+			previousCalled = true;
+			return previousNode.getElement();
 		}
 
 		@Override
 		public int nextIndex() {
-			// TODO Auto-generated method stub
-			return 0;
+			return index;
 		}
 
 		@Override
 		public int previousIndex() {
-			// TODO Auto-generated method stub
-			return 0;
+			return index - 1;
 		}
 
 		@Override
 		public void remove() {
 			// TODO Auto-generated method stub
-			
+			iterModCount++;
+			modCount++;
 		}
 
 		@Override
 		public void set(T e) {
 			// TODO Auto-generated method stub
-			
+			iterModCount++;
+			modCount++;
 		}
 
 		@Override
 		public void add(T e) {
-			// TODO Auto-generated method stub
-			
+			Node<T> newNode = new Node<T>(e);
+					
+			iterModCount++;
+			modCount++;
 		}
 		
 	}

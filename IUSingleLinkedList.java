@@ -325,11 +325,13 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 		private int iterModCount;
 		private boolean nextCalled;
 		private Node<T> currentNode;
+		private Node<T> previousNode;
 		
 		/** Creates a new iterator for the list */
 		public SLLIterator() {
 			nextNode = head;
 			currentNode = null;
+			previousNode = null;
 			nextCalled = false;
 			iterModCount = modCount;
 		}
@@ -337,21 +339,17 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 		@Override
 		public boolean hasNext() {
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-
-			if(nextNode == null) {
-				return false;
-			}
-			
-			return true;
+			return nextNode != null;
 		}
 
 		@Override
 		public T next() {
-			
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-			if(nextNode == null) throw new NoSuchElementException();
+			if(!hasNext()) throw new NoSuchElementException();
 			
 			nextCalled = true;
+			
+			previousNode = currentNode;
 			currentNode = nextNode;
 			nextNode = nextNode.getNext();
 
@@ -360,14 +358,16 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 		
 		@Override
 		public void remove() {
-			
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-			if(nextCalled == false) throw new IllegalStateException();
-
-			IUSingleLinkedList.this.remove(currentNode.getElement());
-
-			iterModCount++;
+			if(!nextCalled) throw new IllegalStateException();
+			
+			currentNode = previousNode;
+			previousNode = null;
+			currentNode.setNext(nextNode);
+			
 			nextCalled = false;
+			iterModCount++;
+			modCount++;
 			
 		}
 	}
