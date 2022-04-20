@@ -20,8 +20,9 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		Node<T> newNode = new Node<T>(element);
 		
 		newNode.setNext(head);
-		
+		if(!isEmpty()) head.setPrevious(newNode);
 		head = newNode;
+		
 		if(isEmpty()) tail = newNode;
 		
 		size++;
@@ -40,6 +41,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 	@Override
 	public void addAfter(T element, T target) {
+		
 		Node<T> currentNode = head;
 		boolean found = false;
 		
@@ -56,8 +58,9 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		if(!found) throw new NoSuchElementException();
 		
 		Node<T> newNode = new Node<T>(element);
-		currentNode.setNext(newNode);
 		newNode.setNext(currentNode.getNext());
+		newNode.setPrevious(currentNode);
+		currentNode.setNext(newNode);
 		
 		size++;
 		modCount++;
@@ -101,7 +104,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		else if(index == size) {
 			newNode.setPrevious(tail);
 			tail.setNext(newNode);
-			newNode = tail;
+			tail = newNode;
 		}
 		
 		else {

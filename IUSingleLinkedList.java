@@ -106,7 +106,6 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 		else {
 			
 			if(previousNode != null) previousNode.setNext(newNode);
-			if(currentIndex == 0) head = newNode;
 			newNode.setNext(currentNode);
 			if(newNode.getNext() == null) tail = newNode;
 			
