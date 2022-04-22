@@ -196,7 +196,6 @@ public class ListTester {
 		testSingleElementList(emptyList_addA_A, "emptyList_addA_A", LIST_A, STRING_A);
 		testSingleElementList(emptyList_addTo0A_A, "emptyList_addTo0A_A", LIST_A, STRING_A);
 		testTwoElementList(A_addToRearB_AB, "A_addToRearB_AB", LIST_AB, STRING_AB);
-		//testTwoElementList(A_addAfterB_AB, "A_addAfterB_AB", LIST_AB, STRING_AB);
 		testTwoElementList(A_addB_AB, "A_addB_AB", LIST_AB, STRING_AB);
 		testTwoElementList(A_addTo0B_BA, "A_addTo0B_BA", LIST_BA, STRING_BA);
 		testTwoElementList(A_addTo1B_AB, "A_addTo1B_AB", LIST_AB, STRING_AB);
@@ -204,11 +203,9 @@ public class ListTester {
 		testEmptyList(A_removeLast_emptyList, "A_removeLast_emptyList");
 		testEmptyList(A_remove0_emptyList, "A_remove0_emptyList");
 		testThreeElementList(AB_addToFrontC_CAB, "AB_addToFrontC_CAB", LIST_CAB, STRING_CAB);
-		//testThreeElementList(AB_addAfterA_ACB, "AB_addAfterA_ACB", LIST_ACB, STRING_ACB);
-		//testThreeElementList(AB_addAfterB_ABC, "AB_addAfterB_ABC", LIST_ABC, STRING_ABC);
+		testThreeElementList(AB_addAfterA_ACB, "AB_addAfterA_ACB", LIST_ACB, STRING_ACB);
 		testThreeElementList(AB_addTo0C_CAB, "AB_addTo0C_CAB", LIST_CAB, STRING_CAB);
 		testThreeElementList(AB_addC_ABC, "AB_addC_ABC", LIST_ABC, STRING_ABC);
-		testThreeElementList(AB_addTo1C_ACB, "AB_addTo1C_ACB", LIST_ACB, STRING_ACB);
 		testThreeElementList(AB_addTo2C_ABC, "AB_addTo2C_ABC", LIST_ABC, STRING_ABC);
 		testSingleElementList(AB_removeLast_A, "AB_removeLast_A", LIST_A, STRING_A);
 		testSingleElementList(AB_removeFirst_B, "AB_removeFirst_B", LIST_B, STRING_B);
@@ -355,16 +352,6 @@ public class ListTester {
 		return list;
 	}
 	private Scenario<Integer> A_addToRearB_AB = () -> A_addToRearB_AB();
-
-	/** Scenario: [A] -> addAfter(B,A) -> [A,B] 
-	 * @return [A,B] after addToRear(B)
-	 */
-	private IndexedUnsortedList<Integer> A_addAfterB_AB() {
-		IndexedUnsortedList<Integer> list = emptyList_addToFrontA_A();
-		list.addAfter(ELEMENT_B, ELEMENT_A);
-		return list;
-	}
-	private Scenario<Integer> A_addAfterB_AB = () -> A_addAfterB_AB();
 	
 	/** Scenario: [A] -> add(B) -> [A,B] 
 	 * @return [A,B] after add(B)
@@ -505,19 +492,6 @@ public class ListTester {
 		return list;
 	}
 	private Scenario<Integer> AB_addTo0C_CAB = () -> AB_addTo0C_CAB();
-	
-	/** Scenario: [A,B] -> add(1, C) -> [A,C,B] 
-	 * @return [A,C,B] after add(1, C)
-	 */
-	private IndexedUnsortedList<Integer> AB_addTo1C_ACB() {
-		IndexedUnsortedList<Integer> list = newList();
-		list.addToRear(ELEMENT_A);
-		list.addToRear(ELEMENT_B);
-		
-		list.add(1, ELEMENT_C);
-		return list;
-	}
-	private Scenario<Integer> AB_addTo1C_ACB = () -> AB_addTo1C_ACB();
 	
 	/** Scenario: [A,B] -> add(2, C) -> [A,B,C] 
 	 * @return [A,B,C] after add(2, C)

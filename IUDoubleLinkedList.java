@@ -315,7 +315,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	
 	@Override
 	public Iterator<T> iterator() {
-		return new DLLIterator();
+		return new DLLListIterator();
 	}
 
 	@Override
@@ -334,11 +334,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		private int iterModCount;
 		private boolean nextCalled;
 		private Node<T> currentNode;
+		private Node<T> previousNode;
 		
 		/** Creates a new iterator for the list */
 		public DLLIterator() {
 			nextNode = head;
 			currentNode = null;
+			previousNode = null;
 			nextCalled = false;
 			iterModCount = modCount;
 		}
@@ -346,21 +348,17 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		@Override
 		public boolean hasNext() {
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-
-			if(nextNode == null) {
-				return false;
-			}
-			
-			return true;
+			return nextNode != null;
 		}
 
 		@Override
 		public T next() {
-			
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-			if(nextNode == null) throw new NoSuchElementException();
+			if(!hasNext()) throw new NoSuchElementException();
 			
 			nextCalled = true;
+			
+			previousNode = currentNode;
 			currentNode = nextNode;
 			nextNode = nextNode.getNext();
 
@@ -369,14 +367,18 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		
 		@Override
 		public void remove() {
-			
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-			if(nextCalled == false) throw new IllegalStateException();
-
-			IUDoubleLinkedList.this.remove(currentNode.getElement());
-
-			iterModCount++;
+			if(!nextCalled) throw new IllegalStateException();
+			
+			currentNode = previousNode;
+			currentNode.setNext(nextNode);
+			previousNode = null;
+			
+			size--;
+			
 			nextCalled = false;
+			iterModCount++;
+			modCount++;
 			
 		}
 	}
@@ -406,8 +408,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		
 		@Override
 		public boolean hasNext() {
-			if(nextNode != null) return true;
-			return false;
+			return nextNode != null;
 		}
 
 		@Override
@@ -475,22 +476,86 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 		@Override
 		public void remove() {
-			// TODO Auto-generated method stub
+			if (modCount != iterModCount) {
+				throw new ConcurrentModificationException();
+			}
+			if (!nextCalled && !previousCalled) {
+				throw new IllegalStateException();
+			}
+			if (nextCalled) {
+				previousNode = previousNode.getPrevious();
+				if (nextNode != null) {
+					nextNode.setPrevious(previousNode);
+				}
+				else { // tail is getting removed
+					tail = tail.getPrevious();
+				}
+				if (previousNode != null) {
+					previousNode.setNext(nextNode);
+				}
+				else { // head is getting removed
+					head = head.getNext();
+				}
+			}
+			else { // previousCalled
+				// TODO: implement previousCalled
+			}
+			nextCalled = false;
+			previousCalled = false;
 			iterModCount++;
 			modCount++;
+			size--;
 		}
 
 		@Override
 		public void set(T e) {
-			// TODO Auto-generated method stub
+			
+			if(nextCalled || previousCalled) {
+				nextNode.setElement(e);
+			}
+			else {
+				throw new IllegalStateException();
+			}
+			
 			iterModCount++;
 			modCount++;
 		}
 
 		@Override
 		public void add(T e) {
+			
+			if(modCount != iterModCount) throw new ConcurrentModificationException();
+			
 			Node<T> newNode = new Node<T>(e);
-					
+			
+			if(isEmpty()) {
+				head = newNode; 
+				tail = newNode;
+			}
+			
+			else if(index == 0) {
+				newNode.setNext(head);
+				head.setPrevious(newNode);
+				head = newNode;
+			}
+			
+			else if(index == size) {
+				tail.setNext(newNode);
+				newNode.setPrevious(tail);
+				tail = newNode;
+			}
+			
+			else {
+				newNode.setNext(nextNode);
+				if(previousNode != null) {
+					previousNode.setNext(newNode);
+					newNode.setPrevious(previousNode);
+				}
+				if(newNode.getNext() != null) {
+					newNode.getNext().setPrevious(newNode); // cheatning??
+				}
+			}
+			
 			iterModCount++;
 			modCount++;
 		}
