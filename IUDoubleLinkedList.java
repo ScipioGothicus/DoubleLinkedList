@@ -483,7 +483,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 				throw new IllegalStateException();
 			}
 			if (nextCalled) {
-				previousNode = previousNode.getPrevious();
+				if(previousNode != null) previousNode = previousNode.getPrevious();
 				if (nextNode != null) {
 					nextNode.setPrevious(previousNode);
 				}
@@ -498,7 +498,20 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 				}
 			}
 			else { // previousCalled
-				// TODO: implement previousCalled
+				if(nextNode != null) nextNode = nextNode.getPrevious();
+				if (nextNode != null) {
+					nextNode.setPrevious(previousNode);
+				}
+				else { // tail is getting removed
+					tail = tail.getPrevious();
+				}
+				if (previousNode != null) {
+					previousNode.setNext(nextNode);
+				}
+				else { // head is getting removed
+					head = head.getNext();
+				}
+				
 			}
 			nextCalled = false;
 			previousCalled = false;
