@@ -359,8 +359,6 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 		@Override
 		public T next() {
-			
-			//if(modCount != iterModCount) throw new ConcurrentModificationException();
 			if(!hasNext()) throw new NoSuchElementException();
 			
 			T returnVal = nextNode.getElement();
@@ -380,22 +378,12 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 		@Override
 		public T previous() {
-			if(!hasPrevious()){
-				throw new NoSuchElementException();
-			}
-			T retVal = null;
-			if(nextNode == null){
-				if(tail != null){
-					retVal = (T) tail.getElement();
-					nextNode = tail;
-				}
-			} else if(nextNode.getPrevious() != null){
-				retVal = nextNode.getPrevious().getElement();
-				nextNode = nextNode.getPrevious();
-			}
-			previousNode = nextNode;
-			index++;
-			return retVal;
+			//TODO
+			T returnVal
+			
+			previousCalled = true;
+			index--;
+			return returnVal;
 		}
 
 		@Override
@@ -417,21 +405,19 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 				throw new IllegalStateException();
 			}
 			
-			
-				if(previousNode != null) previousNode = previousNode.getPrevious();
-				if (nextNode != null) {
-					nextNode.setPrevious(previousNode);
-				}
-				else { // tail is getting removed
-					tail = tail.getPrevious();
-				}
-				if (previousNode != null) {
-					previousNode.setNext(nextNode);
-				}
-				else { // head is getting removed
-					head = head.getNext();
-				}
-			
+			if(previousNode != null) previousNode = previousNode.getPrevious();
+			if (nextNode != null) {
+				nextNode.setPrevious(previousNode);
+			}
+			else { // tail is getting removed
+				tail = tail.getPrevious();
+			}
+			if (previousNode != null) {
+				previousNode.setNext(nextNode);
+			}
+			else { // head is getting removed
+				head = head.getNext();
+			}
 			
 			nextCalled = false;
 			previousCalled = false;
