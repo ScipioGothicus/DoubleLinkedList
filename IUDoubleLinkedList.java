@@ -347,8 +347,20 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		}
 
 		public DLLListIterator(int startingIndex) {
-			this();
+			if(startingIndex < 0 || startingIndex > size) throw new IndexOutOfBoundsException();
+			
+			nextNode = head;
+			
+			for(int i = 0; i < startingIndex; i++) {
+				previousNode = nextNode;
+				nextNode = nextNode.getNext();
+				
+			}
+			nextCalled = false;
+			previousCalled = false;
+			iterModCount = modCount;
 			index = startingIndex;
+
 		}
 		
 		@Override
@@ -373,14 +385,26 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		@Override
 		public boolean hasPrevious() {
 			if(iterModCount != modCount) throw new ConcurrentModificationException();
-			return previousNode != null;
+			return nextNode != head;
 		}
 
 		@Override
 		public T previous() {
-			//TODO
-			T returnVal
+			if(!hasPrevious()) throw new NoSuchElementException();
 			
+			T returnVal = null;
+			
+			if(nextNode == null){
+				if(tail != null){
+					returnVal = tail.getElement();
+					nextNode = tail;
+				}
+			} else if(nextNode.getPrevious() != null){
+				returnVal = nextNode.getPrevious().getElement();
+				nextNode = nextNode.getPrevious();
+			}
+			
+			previousNode = nextNode;
 			previousCalled = true;
 			index--;
 			return returnVal;
@@ -388,11 +412,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 		@Override
 		public int nextIndex() {
+			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			return index;
 		}
 
 		@Override
 		public int previousIndex() {
+			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			return index - 1;
 		}
 
@@ -417,6 +443,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 			}
 			else { // head is getting removed
 				head = head.getNext();
+
 			}
 			
 			nextCalled = false;
@@ -428,9 +455,10 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 		@Override
 		public void set(T e) {
+			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			
 			if(nextCalled || previousCalled) {
-				nextNode.setElement(e);
+				previousNode.setElement(e);
 			}
 			else {
 				throw new IllegalStateException();
