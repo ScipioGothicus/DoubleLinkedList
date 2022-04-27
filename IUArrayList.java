@@ -46,6 +46,7 @@ public class IUArrayList<T> implements IndexedUnsortedList<T> {
 			array[i + 1] = array[i];
 		}
 		array[0] = element;
+		modCount++;
 		rear++;
 	}
 
@@ -109,11 +110,10 @@ public class IUArrayList<T> implements IndexedUnsortedList<T> {
 		
 		T retVal = array[0];
 
-		array[0] = null;
 		for(int i = 0; i < rear - 1; i++) {
 			array[i] = array[i + 1];
 		}
-		
+		array[rear - 1] = null;
 		modCount++;
 		rear--;
 		
@@ -266,8 +266,8 @@ public class IUArrayList<T> implements IndexedUnsortedList<T> {
 		@Override
 		public boolean hasNext() {
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
-			
-			if(array[nextIndex] == null) {
+
+			if(nextIndex >= rear) {
 				return false;
 			}
 			return true;
@@ -279,9 +279,9 @@ public class IUArrayList<T> implements IndexedUnsortedList<T> {
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
 			if(nextIndex >= rear) throw new NoSuchElementException();
 			
-			nextCalled = true;
 			nextIndex++;
-			return array[nextIndex - 1];
+			nextCalled = true;
+			return array[nextIndex-1];
 		}
 
 		@Override
