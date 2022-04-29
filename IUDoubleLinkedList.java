@@ -31,7 +31,21 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 	@Override
 	public void addToRear(T element) {
-		add(size, element); 
+		Node<T> newNode = new Node<T>(element);
+		
+		if(isEmpty()) {
+			head = newNode; 
+			tail = newNode;
+		}		
+		else {
+			newNode.setPrevious(tail);
+			tail.setNext(newNode);
+			tail = newNode;
+		}
+		
+		size++;
+		modCount++;
+
 	}
 
 	@Override
@@ -123,7 +137,18 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	@Override
 	public T removeFirst() {
 		if(isEmpty()) throw new NoSuchElementException();
-		return remove(0);
+		
+		T returnVal = head.getElement();
+		if(head.getNext() == null) head = null; 
+		else {
+			head = head.getNext();
+			head.setPrevious(null);
+		}
+		
+		size--;
+		modCount++;
+		
+		return returnVal;
 	}
 
 	@Override
@@ -503,6 +528,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 				}
 			}
 			
+			size++;
 			iterModCount++;
 			modCount++;
 		}
