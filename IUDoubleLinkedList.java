@@ -3,19 +3,37 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+/**
+ * 
+ * The custom implementation of a doubly-linked list complete with a ListIterator.
+ * Implements IndexedUnsortedList and uses the Node class.
+ * 
+ * @author Preston Hardy
+ *
+ * @param <T>
+ */
+
 public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
 	private Node<T> head, tail;
 	private int size;
 	private int modCount;
 	
+	/**
+	 * Constructs a doubly-linked list with a size of 0.
+	 */
 	public IUDoubleLinkedList() {
 		head = tail = null;
 		size = 0;
 		modCount = 0;
 	}
 	
+
 	@Override
+	/**
+	 * Adds a new Node to index 0.
+	 * @param the element to be contained within the Node created.
+	 */
 	public void addToFront(T element) {
 		Node<T> newNode = new Node<T>(element);
 		
@@ -30,6 +48,10 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Adds a new Node to the end of the list (similar to a "push" for a stack).
+	 * @param the element to be contained within the Node created.
+	 */
 	public void addToRear(T element) {
 		Node<T> newNode = new Node<T>(element);
 		
@@ -49,11 +71,22 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Functions the same as addToRear ("pushes" elements like a stack).
+	 * @param the element to be contained within the Node created.
+	 */
 	public void add(T element) {
 		addToRear(element);
 	}
 
 	@Override
+	/**
+	 * Adds a new Node directly after a target Node.
+	 * 
+	 * @param the element to be contained with the Node 
+	 * @param the target Node to add the new Node after.
+	 * @throws NoSuchElementException if the target node could not be found.
+	 */
 	public void addAfter(T element, T target) {
 		
 		Node<T> currentNode = head;
@@ -82,6 +115,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Adds a new Node at a specified index.
+	 * 
+	 * @param the index to add the new Node to
+	 * @param the element to be contained with the Node
+	 * @throws IndexOutOfBoundsException if the specified index is not within the list's constraints
+	 */
 	public void add(int index, T element) {
 		
 		Node<T> currentNode = head;
@@ -135,6 +175,12 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Removes the first Node (index 0) from the list.
+	 * 
+	 * @throws NoSuchElementException if the list is empty.
+	 * @return the element removed.
+	 */
 	public T removeFirst() {
 		if(isEmpty()) throw new NoSuchElementException();
 		
@@ -152,12 +198,25 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Removes the last Node from the list
+	 * 
+	 * @throws NoSuchElementException if the list is empty.
+	 * @return the element removed.
+	 */
 	public T removeLast() {
 		if(isEmpty()) throw new NoSuchElementException();
 		return remove(size-1);
 	}
 
 	@Override
+	/**
+	 * Searches through the list and removes the first matching element.
+	 * 
+	 * @param the Node to remove's element
+	 * @throws NoSuchElementException if the element cannot be found.
+	 * @return the element removed.
+	 */
 	public T remove(T element) {
 		if (isEmpty()) {
 			throw new NoSuchElementException();
@@ -200,6 +259,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Removes the Node at the specified index.
+	 * 
+	 * @param the index of the Node to be removed
+	 * @throws IndexOutOfBoundsException if the specified index is not within the list's constraints
+	 * @return the element removed.
+	 */
 	public T remove(int index) {
 		T returnVal;
 		
@@ -238,6 +304,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Sets a Node's element to a new specified element.
+	 * 
+	 * @param the index of the Node to be set
+	 * @param the new element that the Node should be set to
+	 * @throws IndexOutOfBoundsException if the specified index is not within the list's constraints
+	 */
 	public void set(int index, T element) {
 		Node<T> currentNode = head;
 		int currentIndex = 0;
@@ -254,6 +327,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Gets the element of a Node.
+	 * 
+	 * @param the index of the Node to be retrieved
+	 * @throws IndexOutOfBoundsException if the specified index is not within the list's constraints
+	 * @return the Node's element.
+	 */
 	public T get(int index) {
 		Node<T> currentNode = head;
 		int currentIndex = 0;
@@ -269,6 +349,12 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Gets the index of the first element found using the specified element.
+	 * 
+	 * @param the element to find
+	 * @return -1 if the element is not found, or returns the index of the first element found
+	 */
 	public int indexOf(T element) {
 		int index = 0;
 		
@@ -286,18 +372,36 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Gets the element of the first Node.
+	 * 
+	 * @throws NoSuchElementException if the list is empty.
+	 * @return the element of the first Node.
+	 */
 	public T first() {
 		if(isEmpty()) throw new NoSuchElementException();
 		return head.getElement();
 	}
 
 	@Override
+	/**
+	 * Gets the element of the last Node.
+	 * 
+	 * @throws NoSuchElementException if the list is empty.
+	 * @return the element of the last Node.
+	 */
 	public T last() {
 		if(isEmpty()) throw new NoSuchElementException();
 		return tail.getElement();
 	}
 
 	@Override
+	/**
+	 * Searches through a list to find if it contains a Node with the target element.
+	 * 
+	 * @param the target element.
+	 * @return true if the list contains the target element, false otherwise.
+	 */
 	public boolean contains(T target) {
 		Node<T> currentNode = head;
 		
@@ -312,16 +416,31 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 
 	@Override
+	/**
+	 * Checks if the list is empty.
+	 * 
+	 * @return true if the list is empty, false otherwise.
+	 */
 	public boolean isEmpty() { 
 		return size == 0;
 	}
 
 	@Override
+	/**
+	 * Returns the size of the list.
+	 * 
+	 * @return the size of the list.
+	 */
 	public int size() {
 		return size;
 	}
 
 	@Override
+	/**
+	 * Returns the list as a readable string, showing all Nodes within a list.
+	 * 
+	 * @return the list as a String
+	 */
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		str.append("[");
@@ -338,20 +457,43 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 	}
 	
 	@Override
+	/**
+	 * Constructs a new iterator.
+	 * 
+	 * @return an Iterator.
+	 */
 	public Iterator<T> iterator() {
 		return new DLLListIterator();
 	}
 
 	@Override
+	/**
+	 * Constructs a new ListIterator.
+	 * 
+	 * @return a ListIterator
+	 */
 	public ListIterator<T> listIterator() {
 		return new DLLListIterator();
 	}
 
 	@Override
+	/**
+	 * Constructs a new ListIterator with the cursor index set by the parameter.
+	 * 
+	 * @param the index to start the cursor at
+	 * @return a ListIterator with cursor set by the parameter
+	 */
 	public ListIterator<T> listIterator(int startingIndex) {
 		return new DLLListIterator(startingIndex);
 	}
 	
+	/**
+	 *
+	 * A custom doubly-linked ListIterator implementing the Java ListIterator. Uses the Node class.
+	 * 
+	 * @author Preston Hardy
+	 *
+	 */
 	private class DLLListIterator implements ListIterator<T> {
 		private Node<T> nextNode;
 		private Node<T> previousNode;
@@ -369,7 +511,11 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 			iterModCount = modCount;
 			index = 0;
 		}
-
+		/**
+		 * Creates a new ListIterator at the starting index.
+		 * 
+		 * @param startingIndex
+		 */
 		public DLLListIterator(int startingIndex) {
 			if(startingIndex < 0 || startingIndex > size) throw new IndexOutOfBoundsException();
 			
