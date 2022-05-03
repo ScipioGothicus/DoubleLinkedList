@@ -514,6 +514,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		/**
 		 * Creates a new ListIterator at the starting index.
 		 * 
+		 * @throws IndexOutOfBoundsException if the starting index is outside of the cursor's restraints.
 		 * @param startingIndex
 		 */
 		public DLLListIterator(int startingIndex) {
@@ -534,12 +535,24 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		}
 		
 		@Override
+		/**
+		 * Checks if there is a next Node after the cursor's position.
+		 * 
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 * @return true if there is a Node after the cursor, false otherwise
+		 */
 		public boolean hasNext() {
 			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			return nextNode != null;
 		}
 
 		@Override
+		/**
+		 * Moves the cursor one spot forward, updating the previous and next Node.
+		 * 
+		 * @throws NoSuchElementException if there is not a next Node
+		 * @return the Node that the cursor passes over when moving forward
+		 */
 		public T next() {
 			if(!hasNext()) throw new NoSuchElementException();
 			
@@ -554,12 +567,24 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		}
 
 		@Override
+		/**
+		 * Checks if there is a previous Node before the cursor's position.
+		 * 
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 * @return true if there is a Node before the cursor, false otherwise
+		 */
 		public boolean hasPrevious() {
 			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			return previousNode != null;
 		}
 
 		@Override
+		/**
+		 * Moves the cursor one spot backwards, updating the previous and next Node.
+		 * 
+		 * @throws NoSuchElementException if there is not a previous Node
+		 * @return the Node that the cursor passes over when moving backwards
+		 */
 		public T previous() {
 			if(!hasPrevious()) throw new NoSuchElementException();
 			
@@ -574,18 +599,36 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		}
 
 		@Override
+		/**
+		 * Returns the index after the cursor's current position
+		 * 
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 * @return the next index of the cursor
+		 */
 		public int nextIndex() {
 			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			return index;
 		}
 
 		@Override
+		/**
+		 * Returns the index before the cursor's current position
+		 * 
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 * @return the previous index of the cursor
+		 */
 		public int previousIndex() {
 			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			return index - 1;
 		}
 
 		@Override
+		/**
+		 * Removes the last Node returned by next or previous.
+		 * 
+		 * @throws IllegalStateException if next or previous has not been called
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 */
 		public void remove() {
 			if (modCount != iterModCount) {
 				throw new ConcurrentModificationException();
@@ -631,6 +674,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		}
 
 		@Override
+		/**
+		 * Sets the Node last returned by next or previous.
+		 * 
+		 * @param the new element to set the Node to 
+		 * @throws IllegalStateException if next or previous has not been called
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 */
 		public void set(T e) {
 			if(iterModCount != modCount) throw new ConcurrentModificationException();
 			
@@ -651,6 +701,13 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 		}
 
 		@Override
+		/**
+		 * Adds a new Node directly before what would be returned by next()
+		 * 
+		 * @param the new element to set the Node to 
+		 * @throws IllegalStateException if next or previous has not been called
+		 * @throws ConcurrentModificationException if the list has been modified outside the iterator
+		 */
 		public void add(T e) {
 			
 			if(modCount != iterModCount) throw new ConcurrentModificationException();
